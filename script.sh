@@ -17,7 +17,7 @@ BACKUP_CONFIG="config.json" # file
 BACKUP_ATTACHMENTS="attachments" # directory
 BACKUP_SENDS="sends" # directory
 
-# Back up files and directories.
+# Back up files and directories (https://linux.die.net/man/1/tar).
 tar -Jcf $BACKUP_LOCATION $BACKUP_DB $BACKUP_RSA $BACKUP_CONFIG $BACKUP_ATTACHMENTS $BACKUP_SENDS 2>/dev/null
 
 OUTPUT="${OUTPUT}New backup created"
