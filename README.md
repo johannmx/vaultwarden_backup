@@ -38,7 +38,7 @@ services:
       - GID=100
 ```
 
-## Volumes _(permissions required)_
+## Volumes _(permission required)_
 `/data` _(read)_- Vaultwarden's `/data` directory. Recommend setting mount as read-only.
 
 `/backups` _(write)_ - Where to store backups to.
