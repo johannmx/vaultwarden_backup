@@ -49,8 +49,8 @@ services:
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | UID                ⭐| User ID to run the cron job as.                                                                                                       |
 | GID                ⭐| Group ID to run the cron job as.                                                                                                      |
-| CRON_TIME          👍| When to run _(default is every 12 hours)_. Info [here][cron-format-wiki] and editor [here][cron-editor]. |
-| DELETE_AFTER       👍| _(exclusive to automatic mode)_ Delete backups _X_ days old. Requires `read` and `write` permissions.                                 |
+| CRON_TIME          👍| When to run _(default is every 12 hours)_. Info [here][cron-format-wiki] and editor [here][cron-editor].                              |
+| DELETE_AFTER       👍| Delete backups _X_ days old. Requires `read` and `write` permissions.                                 |
 
 #### Optional
 | Environment Variable | Info                                                                                         |
