@@ -33,8 +33,8 @@ if [ -n "$DELETE_AFTER" ] && [ "$DELETE_AFTER" -gt 0 ]; then
     find . -iname "*.${EXTENSION}" -type f -mtime +$DELETE_AFTER -exec rm -f {} \;
 
     OUTPUT="${OUTPUT}, $([ ! -z "$TO_DELETE" ] \
-                       && echo "deleted $(echo "$TO_DELETE" | wc -l) archives older than ${DELETE_AFTER} days" \
-                       || echo "no archives older than ${DELETE_AFTER} days to delete")"
+                       && echo "deleted $(echo "$TO_DELETE" | wc -l) archive(s) older than ${DELETE_AFTER} day(s)" \
+                       || echo "no archives older than ${DELETE_AFTER} day(s) to delete")"
 fi
 
 
