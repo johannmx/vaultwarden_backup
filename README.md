@@ -22,20 +22,31 @@ Pass `manual` to `docker run` or `docker-compose` as a `command`.
 services:
   vaultwarden:
     # Vaultwarden configuration here.
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    environment:
+      - WEBSOCKET_ENABLED=true  # Enable WebSocket notifications.
+    volumes:
+      - /folder-to/bitwarden/data:/data
+    ports:
+      - 8088:80
+      - 3012:3012
   backup:
-    image: jmqm/vaultwarden_backup:latest
+    image: johannmx/vaultwarden_backup:latest
     container_name: vaultwarden_backup
     network_mode: none
     volumes:
-      - /vaultwarden_data_directory:/data:ro # Read-only
-      - /backup_directory:/backups
-
-      - /etc/localtime:/etc/localtime:ro # Container uses date from host.
+      - /folder-to/bitwarden/data:/data:ro # Read-only
+      - /folder-to/backups:/backups
+      #- /etc/localtime:/etc/localtime:ro # Container uses date from host.
     environment:
       - DELETE_AFTER=30
-      - CRON_TIME=* */24 * * * # Runs at 12:00 AM.
-      - UID=1024
-      - GID=100
+      #- CRON_TIME=* */24 * * * # Runs at 12:00 AM.
+      - CRON_TIME=00 14 * * * # Runs at 10:15 AM.
+      - UID=1000
+      - GID=1000
+      - TZ=America/Argentina/Buenos_Aires # Specify a timezone to use EG Europe/London.
 ```
 
 ## Volumes _(permissions required)_
@@ -59,9 +70,16 @@ services:
 
 ¹ See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for more information
 
+## build docker --platforms
+`docker buildx create --name mybuilder --use`
+
+`docker buildx build -t test/vaultwarden_backup:latest --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 --push .`
 ## Errors
 #### Unexpected timestamp
 Mount `/etc/localtime` _(recommend mounting as read-only)_ or set `TZ` environment variable.
 
+
+
 [cron-format-wiki]: https://www.ibm.com/docs/en/db2oc?topic=task-unix-cron-format
 [cron-editor]: https://crontab.guru/
+[Docker Build Arch]: https://andrewlock.net/creating-multi-arch-docker-images-for-arm64-from-windows/
