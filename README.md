@@ -73,7 +73,9 @@ services:
 ## build docker --platforms
 `docker buildx create --name mybuilder --use`
 
-`docker buildx build -t test/vaultwarden_backup:latest --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 --push .`
+```
+docker buildx build -t test/vaultwarden_backup:latest --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 --push .
+```
 ## Errors
 #### Unexpected timestamp
 Mount `/etc/localtime` _(recommend mounting as read-only)_ or set `TZ` environment variable.
