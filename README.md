@@ -71,7 +71,9 @@ services:
 ¹ See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for more information
 
 ## build docker --platforms
-`docker buildx create --name mybuilder --use`
+```
+docker buildx create --name mybuilder --use
+```
 
 ```
 docker buildx build -t test/vaultwarden_backup:latest --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 --push .
