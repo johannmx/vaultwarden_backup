@@ -85,5 +85,7 @@ docker buildx build -t test/vaultwarden_backup:latest --platform linux/amd64,lin
 Mount `/etc/localtime` _(recommend mounting as read-only)_ or set `TZ` environment variable.
 
 [cron-format-wiki] https://www.ibm.com/docs/en/db2oc?topic=task-unix-cron-format
+<br>
 [cron-editor]: https://crontab.guru/
+<br>
 [Docker Build Arch]: https://andrewlock.net/creating-multi-arch-docker-images-for-arm64-from-windows/
