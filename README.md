@@ -1,5 +1,7 @@
 Backs up vaultwarden files and directories to `tar.xz` archives automatically. `tar.xz` archives can be opened using data compression programs like [7-Zip](https://www.7-zip.org/) and [WinRAR](https://www.win-rar.com/).
 
+Docker image for all platforms, like ARM (Raspberry Pi) [Docker Hub](https://hub.docker.com/r/johannmx/vaultwarden_backup)
+
 Files and directories that are backed up:
 - db.sqlite3
 - config.json
