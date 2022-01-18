@@ -1,0 +1,28 @@
+services:
+  vaultwarden:
+    # Vaultwarden configuration here.
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    environment:
+      - WEBSOCKET_ENABLED=true  # Enable WebSocket notifications.
+    volumes:
+      - /folder-to/bitwarden/data:/data
+    ports:
+      - 8088:80
+      - 3012:3012
+  backup:
+    image: johannmx/vaultwarden_backup:latest
+    container_name: vaultwarden_backup
+    network_mode: none
+    volumes:
+      - /folder-to/bitwarden/data:/data:ro # Read-only
+      - /folder-to/backups:/backups
+      #- /etc/localtime:/etc/localtime:ro # Container uses date from host.
+    environment:
+      - DELETE_AFTER=30
+      #- CRON_TIME=* */24 * * * # Runs at 12:00 AM.
+      - CRON_TIME=00 14 * * * # Runs at 10:15 AM.
+      - UID=1000
+      - GID=1000
+      - TZ=America/Argentina/Buenos_Aires # Specify a timezone to use EG Europe/London.
