@@ -7,7 +7,8 @@ RUN apk add --no-cache \
     busybox-suid \
     su-exec \
     xz \
-    tzdata
+    tzdata \
+    curl
 
 ENV CRON_TIME "0 */12 * * *"
 ENV UID 100

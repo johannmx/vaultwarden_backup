@@ -41,3 +41,5 @@ fi
 # ------------------ [ EXIT ] ------------------
 
 echo "[$(date +"%F %r")] ${OUTPUT}."
+echo "[$(date +"%F %r")] Sending notification to Gotify Server."
+curl "https://push.negrura.ar/message?token=APHA80R8HVKdTZN" -F "title=Vaultwarden Backup" -F "message=${OUTPUT}" -F "priority=5" # Send message to Gotify
