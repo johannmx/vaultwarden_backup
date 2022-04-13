@@ -4,7 +4,6 @@
 
 EXTENSION="tar.xz"
 
-
 # ------------------ [ BACKUP ] ------------------
 
 cd /data
@@ -21,6 +20,7 @@ BACKUP_SENDS="sends" # directory
 tar -Jcf $BACKUP_LOCATION $BACKUP_DB $BACKUP_RSA $BACKUP_CONFIG $BACKUP_ATTACHMENTS $BACKUP_SENDS 2>/dev/null
 
 OUTPUT="${OUTPUT}New backup created"
+
 
 
 # ------------------ [ DELETE ] ------------------
@@ -41,5 +41,3 @@ fi
 # ------------------ [ EXIT ] ------------------
 
 echo "[$(date +"%F %r")] ${OUTPUT}."
-echo "[$(date +"%F %r")] Sending notification to Gotify Server."
-curl "https://${GOTIFY_SERVER}/message?token=${GOTIFY_TOKEN}" -F "title=Vaultwarden Backup" -F "message=${OUTPUT}" -F "priority=5" # Send message to Gotify

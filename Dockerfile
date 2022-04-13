@@ -14,8 +14,6 @@ ENV CRON_TIME "0 */12 * * *"
 ENV UID 100
 ENV GID 100
 ENV DELETE_AFTER 0
-ENV GOTIFY_TOKEN 12345
-ENV GOTIFY_SERVER server.com
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY script.sh /app/
