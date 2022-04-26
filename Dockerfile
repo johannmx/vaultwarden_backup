@@ -24,6 +24,6 @@ COPY script.sh /app/
 RUN mkdir /app/log/ \
     && chown -R app:app /app/ \
     && chmod -R 777 /app/ \
-    && chmod +x /usr/local/bin/entrypoint.sh 
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["entrypoint.sh"]
