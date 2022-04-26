@@ -4,6 +4,7 @@
 
 EXTENSION="tar.xz"
 
+
 # ------------------ [ BACKUP ] ------------------
 
 cd /data
@@ -20,7 +21,6 @@ BACKUP_SENDS="sends" # directory
 tar -Jcf $BACKUP_LOCATION $BACKUP_DB $BACKUP_RSA $BACKUP_CONFIG $BACKUP_ATTACHMENTS $BACKUP_SENDS 2>/dev/null
 
 OUTPUT="${OUTPUT}New backup created"
-
 
 
 # ------------------ [ DELETE ] ------------------
