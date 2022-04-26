@@ -22,4 +22,4 @@ RUN mkdir /app/log/ \
     && chmod -R 777 /app/ \
     && chmod +x /usr/local/bin/entrypoint.sh 
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["sh","entrypoint.sh"]
