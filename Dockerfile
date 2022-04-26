@@ -7,8 +7,7 @@ RUN apk add --no-cache \
     busybox-suid \
     su-exec \
     xz \
-    tzdata \
-    curl
+    tzdata
 
 ENV CRON_TIME "0 */12 * * *"
 ENV UID 100
@@ -21,6 +20,6 @@ COPY script.sh /app/
 RUN mkdir /app/log/ \
     && chown -R app:app /app/ \
     && chmod -R 777 /app/ \
-    && chmod +x /usr/local/bin/entrypoint.sh 
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["entrypoint.sh"]
