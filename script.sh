@@ -46,3 +46,7 @@ echo "[$(date +"%F %r")] Sending notification to Gotify Server."
 
 apprise -vv -t "Status Backup Vaultwarden" -b "${OUTPUT}" \
    "gotifys://${GOTIFY_SERVER}/${GOTIFY_TOKEN}/?priority=high"
+
+echo "[$(date +"%F %r")] Sending notification to Telegram."
+apprise -vv -t "Status Backup Vaultwarden" -b "${OUTPUT}" \
+   tgram://${TGRAM_BOT_TOKEN}/${TGRAM_CHAT_ID}/?image=Yes
