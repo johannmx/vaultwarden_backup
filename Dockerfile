@@ -17,6 +17,13 @@ ENV DELETE_AFTER 0
 ENV GOTIFY_TOKEN 12345
 ENV GOTIFY_SERVER server.com
 
+# Install python/pip
+ENV PYTHONUNBUFFERED=1
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+RUN python3 -m ensurepip
+RUN pip3 install --no-cache --upgrade pip setuptools
+
+RUN pip install apprise
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY script.sh /app/
