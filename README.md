@@ -1,6 +1,8 @@
+## Vaultwarden Backup + Gotify notifications
+
 Backs up vaultwarden files and directories to `tar.xz` archives automatically. `tar.xz` archives can be opened using data compression programs like [7-Zip](https://www.7-zip.org/) and [WinRAR](https://www.win-rar.com/).
 
-Docker image for all platforms, like ARM (Raspberry Pi) [Docker Hub](https://hub.docker.com/r/johannmx/vaultwarden_backup)
+#####Docker image for all platforms, like ARM (Raspberry Pi) [Docker Hub](https://hub.docker.com/r/johannmx/vaultwarden_backup)
 
 Files and directories that are backed up:
 - db.sqlite3
@@ -35,20 +37,20 @@ services:
       - 8088:80
       - 3012:3012
   backup:
-    image: johannmx/vaultwarden_backup:latest
-    container_name: vaultwarden_backup
-    network_mode: none
+    image: johannmx/vaultwarden_backup:nightly
+    container_name: vaultwarden_backup_gotify
     volumes:
-      - /folder-to/bitwarden/data:/data:ro # Read-only
-      - /folder-to/backups:/backups
+      - /path/to/bitwarden/data:/data:ro # Read-only
+      - /path/to/Bitwarden/backup:/backups
       #- /etc/localtime:/etc/localtime:ro # Container uses date from host.
     environment:
       - DELETE_AFTER=30
-      #- CRON_TIME=* */24 * * * # Runs at 12:00 AM.
-      - CRON_TIME=00 14 * * * # Runs at 10:15 AM.
+      - CRON_TIME=0 3 * * * # Runs at 3am.
       - UID=1000
       - GID=1000
       - TZ=America/Argentina/Buenos_Aires # Specify a timezone to use EG Europe/London.
+      - GOTIFY_TOKEN=supertoken
+      - GOTIFY_SERVER=subdomain.domain.com
 ```
 
 ## Volumes _(permissions required)_
@@ -63,7 +65,9 @@ services:
 | UID                ⭐| User ID to run the cron job as.                                                                                                       |
 | GID                ⭐| Group ID to run the cron job as.                                                                                                      |
 | CRON_TIME          👍| When to run _(default is every 12 hours)_. Info [here][cron-format-wiki] and editor [here][cron-editor]. |
-| DELETE_AFTER       👍| _(exclusive to automatic mode)_ Delete backups _X_ days old. Requires `read` and `write` permissions.                                 |
+| DELETE_AFTER       👍| _(exclusive to automatic mode)_ Delete backups _X_ days old. Requires `read` and `write` permissions.
+| GOTIFY_TOKEN       👍| Gotify Token generated for app.                                 |
+| GOTIFY_SERVER       👍| Endpoint server _(subdomain.domain.com)_ without http/https.                                 |
 
 #### Optional
 | Environment Variable | Info                                                                                         |
