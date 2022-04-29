@@ -1,4 +1,4 @@
-## Vaultwarden Backup + Gotify notifications
+##💾 Vaultwarden Backup + Gotify notifications
 
 Backs up vaultwarden files and directories to `tar.xz` archives automatically. `tar.xz` archives can be opened using data compression programs like [7-Zip](https://www.7-zip.org/) and [WinRAR](https://www.win-rar.com/).
 
@@ -76,7 +76,7 @@ services:
 
 ¹ See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for more information
 
-## build docker --platforms
+##☑️ build docker --platforms
 ```
 docker buildx create --name mybuilder --use
 ```
