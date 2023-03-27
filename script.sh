@@ -48,6 +48,11 @@ echo "[$(date +"%F %r")] Sending notification to Gotify Server."
 apprise -vv -t "Backup Vaultwarden" -b "☑️ 💾 ${OUTPUT}" \
    "gotifys://${GOTIFY_SERVER}/${GOTIFY_TOKEN}/?priority=high"
 
+# ------------------ [ Slack Notifications ] ------------------
+echo "[$(date +"%F %r")] Sending notification to Slack."
+apprise -vv -t "💾 Backup Vaultwarden" -b "☑️ ${OUTPUT}" \
+   "https://hooks.slack.com/services/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/?footer=no"
+
 # ------------------ [ Telegram Notifications ] ------------------
 # echo "[$(date +"%F %r")] Sending notification to Telegram."
 # apprise -vv -t "💾 Backup Vaultwarden" -b "☑️ ${OUTPUT}" \
