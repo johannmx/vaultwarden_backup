@@ -26,3 +26,6 @@ services:
       - UID=1000
       - GID=1000
       - TZ=America/Argentina/Buenos_Aires # Specify a timezone to use EG Europe/London.
+      - GOTIFY_TOKEN=supertoken
+      - GOTIFY_SERVER=subdomain.domain.com
+      - SLACK_WEBHOOK=slakwebhook
