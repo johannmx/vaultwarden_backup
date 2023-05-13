@@ -44,7 +44,6 @@ echo "[$(date +"%F %r")] ${OUTPUT}."
 
 # ------------------ [ Gotify Notifications ] ------------------
 echo "[$(date +"%F %r")] Sending notification to Gotify Server."
-#curl "https://${GOTIFY_SERVER}/message?token=${GOTIFY_TOKEN}" -F "title=Vaultwarden Backup" -F "message=${OUTPUT}" -F "priority=5" # Send message to Gotify
 apprise -vv -t "Backup Vaultwarden" -b "☑️ 💾 ${OUTPUT}" \
    "gotifys://${GOTIFY_SERVER}/${GOTIFY_TOKEN}/?priority=high"
 
@@ -52,8 +51,3 @@ apprise -vv -t "Backup Vaultwarden" -b "☑️ 💾 ${OUTPUT}" \
 echo "[$(date +"%F %r")] Sending notification to Slack."
 apprise -vv -t "💾 Backup Vaultwarden" -b "☑️ ${OUTPUT}" \
    "${SLACK_WEBHOOK}"
-
-# ------------------ [ Telegram Notifications ] ------------------
-# echo "[$(date +"%F %r")] Sending notification to Telegram."
-# apprise -vv -t "💾 Backup Vaultwarden" -b "☑️ ${OUTPUT}" \
-#    "tgram://${TGRAM_BOT_TOKEN}/${TGRAM_CHAT_ID}"
