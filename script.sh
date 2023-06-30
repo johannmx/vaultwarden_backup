@@ -51,3 +51,10 @@ apprise -vv -t "Backup Vaultwarden" -b "☑️ 💾 ${OUTPUT}" \
 echo "[$(date +"%F %r")] Sending notification to Slack."
 apprise -vv -t "💾 Backup Vaultwarden" -b "☑️ ${OUTPUT}" \
    "${SLACK_WEBHOOK}"
+
+# ------------------ [ Discord Notifications ] ------------------
+# Assuming our {WebhookID} is 4174216298
+# Assuming our {WebhookToken} is JHMHI8qBe7bk2ZwO5U711o3dV_js
+echo "[$(date +"%F %r")] Sending notification to Discord."
+apprise -vv -t "💾 Backup Vaultwarden" -b "☑️ ${OUTPUT}" \
+   "discord://${DISCORD_WEBHOOK_ID}/${DISCORD_WEBHOOK_TOKEN}"
