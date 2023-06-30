@@ -12,7 +12,7 @@ services:
       - 8088:80
       - 3012:3012
   backup:
-    image: johannmx/vaultwarden_backup:latest
+    image: ghcr.io/johannmx/vaultwarden_backup:main
     container_name: vaultwarden_backup
     network_mode: none
     volumes:
