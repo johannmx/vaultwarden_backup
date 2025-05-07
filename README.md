@@ -1,96 +1,184 @@
-## 💾 Vaultwarden Backup + Gotify notifications
+# 💾 Vaultwarden Backup
 
-Backs up vaultwarden files and directories to `tar.xz` archives automatically. `tar.xz` archives can be opened using data compression programs like [7-Zip](https://www.7-zip.org/) and [WinRAR](https://www.win-rar.com/).
+A robust backup solution for Vaultwarden with support for multiple notification services (Gotify, Slack, Discord). This tool automatically backs up your Vaultwarden data and provides notifications about backup status.
 
-#####Docker image for all platforms, like ARM (Raspberry Pi) [Docker Hub](https://hub.docker.com/r/johannmx/vaultwarden_backup)
+## 🚀 Features
 
-Files and directories that are backed up:
-- db.sqlite3
-- config.json
-- rsa_key.der
-- rsa_key.pem
-- rsa_key.pub.der
-- /attachments
-- /sends
+- Automatic scheduled backups using cron
+- Multiple notification services support:
+  - Gotify
+  - Slack
+  - Discord
+- Configurable backup retention
+- Secure file handling
+- Health checks and monitoring
+- Multi-architecture support (ARM, x86, etc.)
+- Timezone configuration
+- Detailed logging
 
-## Usage
+## 📦 Backed Up Files
 
-#### Automatic Backups
-Refer to the `docker-compose` section below. By default, backing up is automatic.
+The following files and directories are backed up:
+- `db.sqlite3` - Main database
+- `config.json` - Configuration file
+- `rsa_key*` - RSA key files
+- `/attachments` - User attachments
+- `/sends` - Send items
 
-#### Manual Backups
-Pass `manual` to `docker run` or `docker-compose` as a `command`.
+## 🛠️ Usage
 
-## docker-compose
+### Quick Start
+
+1. Create a `.env` file with your configuration:
+```env
+GOTIFY_TOKEN=your_token
+GOTIFY_SERVER=your_server
+SLACK_WEBHOOK=your_webhook
+DISCORD_WEBHOOK_ID=your_id
+DISCORD_WEBHOOK_TOKEN=your_token
 ```
+
+2. Use the provided `docker-compose.yml`:
+```yaml
+version: '3.8'
+
 services:
   vaultwarden:
-    # Vaultwarden configuration here.
     image: vaultwarden/server:latest
     container_name: vaultwarden
     restart: always
     environment:
-      - WEBSOCKET_ENABLED=true  # Enable WebSocket notifications.
+      - WEBSOCKET_ENABLED=true
     volumes:
-      - /folder-to/bitwarden/data:/data
+      - /path/to/bitwarden/data:/data
     ports:
       - 8088:80
       - 3012:3012
+    networks:
+      - vaultwarden_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   backup:
-    image: johannmx/vaultwarden_backup:nightly
-    container_name: vaultwarden_backup_gotify
+    image: ghcr.io/johannmx/vaultwarden_backup:main
+    container_name: vaultwarden_backup
+    restart: unless-stopped
+    network_mode: none
     volumes:
-      - /path/to/bitwarden/data:/data:ro # Read-only
-      - /path/to/Bitwarden/backup:/backups
-      #- /etc/localtime:/etc/localtime:ro # Container uses date from host.
+      - /path/to/bitwarden/data:/data:ro
+      - /path/to/backups:/backups
+      - /etc/localtime:/etc/localtime:ro
     environment:
       - DELETE_AFTER=30
-      - CRON_TIME=0 3 * * * # Runs at 3am.
+      - CRON_TIME=00 14 * * *
       - UID=1000
       - GID=1000
-      - TZ=America/Argentina/Buenos_Aires # Specify a timezone to use EG Europe/London.
-      - GOTIFY_TOKEN=supertoken
-      - GOTIFY_SERVER=subdomain.domain.com
+      - TZ=America/Argentina/Buenos_Aires
+      - GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - GOTIFY_SERVER=${GOTIFY_SERVER}
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK}
+      - DISCORD_WEBHOOK_ID=${DISCORD_WEBHOOK_ID}
+      - DISCORD_WEBHOOK_TOKEN=${DISCORD_WEBHOOK_TOKEN}
+    depends_on:
+      vaultwarden:
+        condition: service_healthy
+
+networks:
+  vaultwarden_net:
+    driver: bridge
 ```
 
-## Volumes _(permissions required)_
-`/data` _(read)_- Vaultwarden's `/data` directory. Recommend setting mount as read-only.
+### Manual Backup
 
-`/backups` _(write)_ - Where to store backups to.
+To run a manual backup:
+```bash
+docker-compose run --rm backup manual
+```
 
-## Environment Variables
-#### ⭐Required, 👍 Recommended
-| Environment Variable | Info                                                                                                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| UID                ⭐| User ID to run the cron job as.                                                                                                       |
-| GID                ⭐| Group ID to run the cron job as.                                                                                                      |
-| CRON_TIME          👍| When to run _(default is every 12 hours)_. Info [here][cron-format-wiki] and editor [here][cron-editor]. |
-| DELETE_AFTER       👍| _(exclusive to automatic mode)_ Delete backups _X_ days old. Requires `read` and `write` permissions.
-| GOTIFY_TOKEN       👍| Gotify Token generated for app.                                 |
-| GOTIFY_SERVER       👍| Endpoint server _(subdomain.domain.com)_ without http/https.                                 |
+## ⚙️ Configuration
+
+### Environment Variables
+
+#### Required
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `UID` | User ID for the backup process | `1000` |
+| `GID` | Group ID for the backup process | `1000` |
 
 #### Optional
-| Environment Variable | Info                                                                                         |
-| -------------------- | -------------------------------------------------------------------------------------------- |
-| TZ ¹                 | Timezone inside the container. Can mount `/etc/localtime` instead as well _(recommended)_.   |
+| Variable | Description | Default | Example |
+|----------|-------------|---------|---------|
+| `CRON_TIME` | Backup schedule (cron format) | `*/5 * * * *` | `0 3 * * *` |
+| `DELETE_AFTER` | Days to keep backups | `0` (keep all) | `30` |
+| `TZ` | Timezone | System default | `Europe/London` |
 
-¹ See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for more information
+#### Notification Services
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GOTIFY_TOKEN` | Gotify application token | Yes |
+| `GOTIFY_SERVER` | Gotify server URL | Yes |
+| `SLACK_WEBHOOK` | Slack webhook URL | No |
+| `DISCORD_WEBHOOK_ID` | Discord webhook ID | No |
+| `DISCORD_WEBHOOK_TOKEN` | Discord webhook token | No |
 
-## ☑️ build docker --platforms
-```
+### Volumes
+
+| Path | Description | Permissions |
+|------|-------------|------------|
+| `/data` | Vaultwarden data directory | Read-only |
+| `/backups` | Backup storage location | Read/Write |
+| `/etc/localtime` | Host timezone | Read-only |
+
+## 🔧 Building
+
+### Multi-architecture Build
+
+```bash
+# Create buildx builder
 docker buildx create --name mybuilder --use
+
+# Build for multiple platforms
+docker buildx build -t your-registry/vaultwarden_backup:latest \
+  --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
+  --push .
 ```
 
-```
-docker buildx build -t test/vaultwarden_backup:latest --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 --push .
-```
-## Errors
-#### Unexpected timestamp
-Mount `/etc/localtime` _(recommend mounting as read-only)_ or set `TZ` environment variable.
+## 🔍 Troubleshooting
 
-## Info
-[cron-format-wiki] https://www.ibm.com/docs/en/db2oc?topic=task-unix-cron-format
-<br>
-[cron-editor]: https://crontab.guru/
-<br>
-[Docker Build Arch]: https://andrewlock.net/creating-multi-arch-docker-images-for-arm64-from-windows/
+### Common Issues
+
+1. **Permission Denied**
+   - Ensure correct UID/GID in environment variables
+   - Check volume permissions
+
+2. **Timezone Issues**
+   - Mount `/etc/localtime` or set `TZ` environment variable
+   - Verify timezone format
+
+3. **Backup Failures**
+   - Check disk space
+   - Verify source directory permissions
+   - Check logs: `docker-compose logs backup`
+
+### Logs
+
+- Backup logs: `/app/log/log.log`
+- Cron logs: `/app/log/cron.log`
+
+## 📚 Resources
+
+- [Cron Format Guide](https://www.ibm.com/docs/en/db2oc?topic=task-unix-cron-format)
+- [Cron Expression Editor](https://crontab.guru/)
+- [Timezone Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+- [Docker Multi-arch Build Guide](https://andrewlock.net/creating-multi-arch-docker-images-for-arm64-from-windows/)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

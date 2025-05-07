@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   vaultwarden:
     # Vaultwarden configuration here.
@@ -11,23 +13,37 @@ services:
     ports:
       - 8088:80
       - 3012:3012
+    networks:
+      - vaultwarden_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
   backup:
     image: ghcr.io/johannmx/vaultwarden_backup:main
     container_name: vaultwarden_backup
+    restart: unless-stopped
     network_mode: none
     volumes:
       - /folder-to/bitwarden/data:/data:ro # Read-only
       - /folder-to/backups:/backups
-      #- /etc/localtime:/etc/localtime:ro # Container uses date from host.
+      - /etc/localtime:/etc/localtime:ro # Container uses date from host.
     environment:
       - DELETE_AFTER=30
-      #- CRON_TIME=* */24 * * * # Runs at 12:00 AM.
       - CRON_TIME=00 14 * * * # Runs at 10:15 AM.
       - UID=1000
       - GID=1000
       - TZ=America/Argentina/Buenos_Aires # Specify a timezone to use EG Europe/London.
-      - GOTIFY_TOKEN=supertoken
-      - GOTIFY_SERVER=subdomain.domain.com
-      - SLACK_WEBHOOK=slakwebhook
-      - DISCORD_WEBHOOK_ID=discordwebhookid
-      - DISCORD_WEBHOOK_TOKEN discordwebhooktoken
+      - GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - GOTIFY_SERVER=${GOTIFY_SERVER}
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK}
+      - DISCORD_WEBHOOK_ID=${DISCORD_WEBHOOK_ID}
+      - DISCORD_WEBHOOK_TOKEN=${DISCORD_WEBHOOK_TOKEN}
+    depends_on:
+      vaultwarden:
+        condition: service_healthy
+
+networks:
+  vaultwarden_net:
+    driver: bridge
