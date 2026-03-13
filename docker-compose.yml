@@ -72,7 +72,9 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    network_mode: none
+    cap_add:
+      - SETGID
+      - SETUID
     volumes:
       - vaultwarden_data:/data:ro
       - backup_data:/backups
@@ -80,9 +82,7 @@ services:
     environment:
       # Backup settings
       DELETE_AFTER: "${BACKUP_DELETE_AFTER:-30}"
-      CRON_TIME: "${BACKUP_CRON_TIME:-0 2 * * *}"  # Daily at 2 AM
-      UID: "${BACKUP_UID:-1000}"
-      GID: "${BACKUP_GID:-1000}"
+      CRON_TIME: "${BACKUP_CRON_TIME:-0 2 * * *}"
       TZ: "${TZ:-America/Argentina/Buenos_Aires}"
       
       # Notification settings
@@ -94,6 +94,8 @@ services:
     depends_on:
       vaultwarden:
         condition: service_healthy
+    networks:
+      - vaultwarden_net
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
