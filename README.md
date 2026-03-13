@@ -5,24 +5,22 @@ A robust backup solution for Vaultwarden with support for multiple notification 
 ## 🚀 Features
 
 - **Automatic scheduled backups** using cron
-- **Multiple notification services** support:
+- **Hot Backup Support**: Uses `sqlite3 .backup` to ensure database consistency even while Vaultwarden is running.
+- **Multiple notification services** support via Apprise:
   - Gotify
   - Slack
   - Discord
 - **Configurable backup retention** with automatic cleanup
-- **Security hardened** containers with minimal privileges
-- **Health checks and monitoring** with improved endpoints
-- **Multi-architecture support** (ARM, x86, etc.)
-- **Timezone configuration** with proper handling
-- **Detailed logging** and error handling
-- **Named volumes** with configurable paths
-- **Optional auto-updates** with Watchtower integration
-- **Environment-based configuration** for easy deployment
+- **Security hardened** containers with non-root user execution
+- **Multi-architecture support**: Optimized for `amd64`, `arm64`, and `arm/v7`
+- **Timezone configuration** for accurate scheduling
+- **Detailed logging**: Real-time logs available via Docker stdout
+- **Easy deployment** with Docker Compose and environment variables
 
 ## 📦 Backed Up Files
 
 The following files and directories are backed up:
-- `db.sqlite3` - Main database
+- `db_backup.sqlite3` - Consistent snapshot of the database
 - `config.json` - Configuration file
 - `rsa_key*` - RSA key files
 - `/attachments` - User attachments
@@ -214,14 +212,16 @@ The improved docker-compose includes several security hardening measures:
 
 - **No new privileges**: Containers cannot escalate privileges
 - **Capability dropping**: Removes unnecessary Linux capabilities
-- **Non-root execution**: Services run as non-root users
+- **Non-root execution**: Services run as non-root users (`app:app`)
 - **Read-only mounts**: Data volumes mounted read-only where possible
-- **Network isolation**: Backup service runs without network access
-- **Resource limits**: Configurable limits for attachments and sends
+- **Apprise integration**: Secure notifications via standard webhooks
+- **Minimal attack surface**: Alpine-based image with essential dependencies only
 
 ## 🔧 Building
 
 ### Multi-architecture Build
+
+The Docker image supports `amd64`, `arm64`, and `arm/v7` architectures.
 
 ```bash
 # Create buildx builder
@@ -229,7 +229,7 @@ docker buildx create --name mybuilder --use
 
 # Build for multiple platforms
 docker buildx build -t your-registry/vaultwarden_backup:latest \
-  --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
+  --platform linux/amd64,linux/arm64,linux/arm/v7 \
   --push .
 ```
 
@@ -238,22 +238,20 @@ docker buildx build -t your-registry/vaultwarden_backup:latest \
 ### Common Issues
 
 1. **Permission Denied**
-   - Ensure correct UID/GID in environment variables
-   - Check volume permissions
+   - The backup process runs as user `app` (UID 1000). Ensure the backup volume is writable by this user.
+   - Check volume permissions on the host.
 
 2. **Timezone Issues**
-   - Mount `/etc/localtime` or set `TZ` environment variable
-   - Verify timezone format
+   - Mount `/etc/localtime` or set the `TZ` environment variable.
 
 3. **Backup Failures**
-   - Check disk space
-   - Verify source directory permissions
-   - Check logs: `docker-compose logs backup`
+   - Check disk space.
+   - Verify that Vaultwarden data is correctly mounted to `/data`.
 
 ### Logs
 
-- Backup logs: `/app/log/log.log`
-- Cron logs: `/app/log/cron.log`
+- Docker stdout (recommended): `docker-compose logs -f backup`
+- Internal backup logs: `/app/log/backup.log`
 
 ## 📚 Resources
 
